@@ -2,101 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Invalid Traffic Technology Agreement</title>
+  <title>Gerador de Contrato IVT</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 40px;
-      line-height: 1.6;
       max-width: 900px;
     }
-    h1, h2 {
-      text-align: center;
+    input, textarea, button {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+      box-sizing: border-box;
     }
-    ul {
-      margin-left: 20px;
-    }
-    .signature {
-      margin-top: 60px;
+    #output {
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-top: 30px;
+      background: #f9f9f9;
     }
   </style>
 </head>
 <body>
 
-  <h1>Invalid Traffic Technology Agreement</h1>
-  <p>(the "Agreement")</p>
+  <h1>Gerador de Contrato - IVT Agreement</h1>
 
-  <p>This Invalid Traffic Technology Agreement (the "Agreement") is made by and between <strong>{client}</strong> (the “Client”), an approved Google MCM Partner, and <strong>{tc_vendor}</strong> ("TC Vendor", collectively, the "Parties"), relating to Client’s use of TC Vendor’s invalid traffic (IVT) measurement and blocking services and technologies, including TC Vendor’s <strong>{solution_name}</strong> solution, analytics platforms, support, and user documentation (collectively, the "Services").</p>
+  <form onsubmit="generateContract(); return false;">
+    <label>Client:</label>
+    <input type="text" id="client" required>
 
-  <h2>Scope of Services</h2>
+    <label>TC Vendor:</label>
+    <input type="text" id="tc_vendor" required>
 
-  <h3>Invalid Traffic Measurement & Blocking</h3>
-  <p>TC Vendor shall provide Client during the Term access to its <strong>{solution_name}</strong> solution, which includes:</p>
-  <ul>
-    <li>Real-time detection, measurement, and blocking of invalid traffic (IVT) across Client’s Properties (websites, apps, or other digital assets approved by TC Vendor).</li>
-    <li>Access to the <strong>{solution_name}</strong> web/app SDK, dashboard, and analytics suite for monitoring IVT metrics, including sophisticated reporting on bot traffic, ad fraud, and non-human traffic patterns.</li>
-    <li>Proactive IVT mitigation strategies, including automated blocking of suspicious traffic and manual review support from TC Vendor’s traffic quality assurance specialists.</li>
-    <li>Compliance with Google MCM program requirements for invalid traffic reporting and mitigation.</li>
-  </ul>
+    <label>Solution Name:</label>
+    <input type="text" id="solution_name" required>
 
-  <h3>Integration & Support</h3>
-  <p>TC Vendor shall provide Client with implementation support, including SDK integration guidance, API documentation, and dedicated technical assistance to ensure alignment with Google’s MCM policies and third-party advertising partner standards.</p>
+    <label>Pricing Description:</label>
+    <textarea id="tc_pricing" rows="3" required></textarea>
 
-  <h2>Service Fees & Payment Terms</h2>
+    <label>Data de Início (formato: April 23, 2025):</label>
+    <input type="text" id="date" required>
 
-  <h3>{solution_name} Pricing</h3>
-  <p>{tc_pricing}</p>
+    <label>Go Live Date:</label>
+    <input type="text" id="go_live_date" required>
 
-  <h3>Calculation Basis</h3>
-  <p>Fees are determined by the greatest of:</p>
-  <ul>
-    <li>Google Analytics pageviews/app sessions,</li>
-    <li>TC Vendor’s SDK-measured requests.</li>
-  </ul>
-  <p>Overage fees apply to excess pageviews/sessions beyond the tier limit.</p>
+    <label>Terms & Conditions Link:</label>
+    <input type="url" id="tc_link" required>
 
-  <h3>Payment Terms</h3>
-  <p>TC Vendor will pay the services by an invoice upfront. Invoiced amounts are due Net 30.</p>
+    <button type="submit">Gerar Contrato</button>
+  </form>
 
-  <h2>General Terms & Conditions</h2>
+  <div id="output"></div>
 
-  <h3>Term & Termination</h3>
-  <p><strong>Term:</strong> Commences on <strong>{date}</strong> and auto-renews annually unless terminated with 30 days’ written notice.</p>
-  <p><strong>Termination:</strong> Either Party may terminate with 30 days’ notice. Post-termination, Client must cease all use of Services.</p>
+  <script>
+    function generateContract() {
+      const data = {
+        client: document.getElementById('client').value,
+        tc_vendor: document.getElementById('tc_vendor').value,
+        solution_name: document.getElementById('solution_name').value,
+        tc_pricing: document.getElementById('tc_pricing').value,
+        date: document.getElementById('date').value,
+        go_live_date: document.getElementById('go_live_date').value,
+        tc_link: document.getElementById('tc_link').value
+      };
 
-  <h3>Compliance with Google MCM Requirements</h3>
-  <p>Client agrees to adhere to Google’s MCM policies, including invalid traffic reporting obligations. TC Vendor reserves the right to suspend Services if Client’s Properties risk non-compliance with Google’s standards.</p>
+      const template = `
+Invalid Traffic Technology Agreement (the "Agreement")
 
-  <h3>Data Sharing & Reporting</h3>
-  <p>Client grants TC Vendor access to traffic and revenue data for IVT analysis. TC Vendor may generate anonymized case studies but will redact Client’s identifying information unless expressly permitted.</p>
+This Invalid Traffic Technology Agreement (the "Agreement") is made by and between ${data.client} (the “Client”), an approved Google MCM Partner, and ${data.tc_vendor} ("TC Vendor", collectively, the "Parties"), relating to Client’s use of TC Vendor’s invalid traffic (IVT) measurement and blocking services and technologies, including TC Vendor’s ${data.solution_name} solution, analytics platforms, support, and user documentation (collectively, the "Services").
 
-  <h3>Intellectual Property</h3>
-  <p>TC Vendor retains all rights to its IVT technologies. Client receives a limited, non-sublicensable license to use the Services as implemented.</p>
+Scope of Services
 
-  <h3>Liability & Indemnification</h3>
-  <p><strong>Limitation of Liability:</strong> TC Vendor disclaims liability for third-party clawbacks, ad account suspensions, or indirect damages. Liability cap equals fees paid in the preceding 12 months.</p>
-  <p><strong>Indemnity:</strong> Client indemnifies TC Vendor against claims arising from Client’s Properties or IVT-related violations.</p>
+Invalid Traffic Measurement & Blocking.
+TC Vendor shall provide Client during the Term access to its ${data.solution_name} solution, which includes:
+(a) Real-time detection, measurement, and blocking of invalid traffic (IVT) across Client’s Properties.
+(b) Access to the ${data.solution_name} dashboard and analytics suite.
+(c) Proactive IVT mitigation strategies.
+(d) Compliance with Google MCM requirements.
 
-  <h3>Confidentiality & Non-Solicitation</h3>
-  <p>Parties agree to protect confidential information and refrain from soliciting each other’s employees/vendors during the Term and for 1–2 years post-termination.</p>
+Integration & Support.
+TC Vendor shall provide implementation support, SDK guidance, API docs, and technical assistance.
 
-  <h3>Governing Law</h3>
-  <p>This Agreement is governed by British Columbia, Canada law. Disputes shall be resolved in its courts.</p>
+Service Fees & Payment Terms
 
-  <h3>Trial Period</h3>
-  <p>The Client will be entitled to a 7-day trial period starting from the Go Live date (<strong>{go_live_date}</strong>), meaning the date when the tags are implemented.</p>
+${data.solution_name} Pricing:
+${data.tc_pricing}
 
-  <h3>Entire Agreement</h3>
-  <p>This Agreement, including incorporated Terms & Conditions <strong><a href="{tc_link}" target="_blank">here</a></strong>, constitutes the entire understanding between the Parties, superseding prior agreements. Amendments require 30 days’ written notice and continued use constitutes acceptance.</p>
+Calculation Basis:
+- Greater of GA pageviews or SDK-measured requests.
+- Overage fees may apply.
 
-  <div class="signature">
-    <p><strong>ACCEPTED AND AGREED:</strong></p>
-    <p>By Client:<br><br>
-      _______________________________<br>
-      <strong>{client}</strong><br>
-      Date: _________________________
-    </p>
-  </div>
+Payment Terms:
+Upfront invoice. Net 30.
+
+General Terms & Conditions
+
+Term & Termination:
+Term begins ${data.date}, renews annually unless 30 days’ notice given.
+Post-termination, Client must stop using Services.
+
+Compliance:
+Client must comply with Google MCM rules.
+
+Data Sharing:
+Client allows access to traffic and revenue data for IVT analysis.
+
+Intellectual Property:
+TC Vendor retains IP. Client gets a limited license.
+
+Liability & Indemnification:
+No liability for clawbacks/suspensions. Cap = fees from last 12 months.
+Client indemnifies TC Vendor for violations.
+
+Confidentiality & Non-Solicitation:
+Parties protect confidential data and avoid solicitation during Term and 1–2 years after.
+
+Governing Law:
+British Columbia, Canada.
+
+Trial Period:
+7-day trial from Go Live: ${data.go_live_date}
+
+Entire Agreement:
+Includes linked Terms & Conditions: ${data.tc_link}
+Amendments require 30 days’ notice.
+
+ACCEPTED AND AGREED:
+
+By Client:
+_______________________________
+${data.client}
+Date: _________________________
+`;
+
+      document.getElementById('output').innerText = template;
+    }
+  </script>
 
 </body>
 </html>
