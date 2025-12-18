@@ -8,8 +8,8 @@
     .container { background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .form-group { margin-bottom: 20px; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
     label { font-weight: bold; display: block; margin-bottom: 5px; }
-    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-    button { background: #004a99; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; margin-bottom: 10px; }
+    button { background: #004a99; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 10px; }
     button:hover { background: #003366; }
     #output { margin-top: 40px; padding: 40px; border: 1px solid #ddd; background: white; white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 12pt; display: none; }
     .bonus-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
@@ -18,14 +18,14 @@
 <body>
 
 <div class="container">
-  <h1>MM Contract Generator - Full Template</h1>
+  <h1>MM Contract Generator</h1>
   
   <div class="form-group">
     <h3>1. Employee Information</h3>
     <label>Full Name:</label>
-    <input type="text" id="emp_name" placeholder="Ex: Paulo Roberto Pozzato">
+    <input type="text" id="name" placeholder="Ex: Paulo Roberto Pozzato">
     <label>Full Address:</label>
-    <input type="text" id="emp_address" placeholder="Ex: 1141 Bennet Dr, Port Coquitlam, BC, V3C 6H2">
+    <input type="text" id="address" placeholder="Ex: 1141 Bennet Dr, Port Coquitlam, BC">
     <label>Province of Employment:</label>
     <select id="province">
       <option value="BC">British Columbia</option>
@@ -36,103 +36,93 @@
   <div class="form-group">
     <h3>2. Role & Salary</h3>
     <label>Position:</label>
-    <input type="text" id="emp_pos" placeholder="Ex: Director of Engineering">
+    <input type="text" id="position" placeholder="Ex: Director of Engineering">
+    <label>Manager Title:</label>
+    <input type="text" id="manager" placeholder="Ex: Chief Executive Officer">
     <label>Effective Date:</label>
-    <input type="text" id="eff_date" placeholder="Ex: March 24, 2025">
+    <input type="text" id="date" placeholder="Ex: March 24, 2025">
     <label>Monthly Salary (CAD):</label>
-    <input type="text" id="monthly_salary" placeholder="Ex: 11,833.33">
+    <input type="text" id="salary_monthly" placeholder="Ex: 11,833.33">
   </div>
 
-  <div class="form-group">
-    <h3>3. KPI Bonus (Quarterly Accrued %)</h3>
-    <div class="bonus-grid">
-      <div><label>Green %:</label><input type="text" id="bonus_g" value="5%"></div>
-      <div><label>Blue %:</label><input type="text" id="bonus_b" value="3%"></div>
-      <div><label>Yellow %:</label><input type="text" id="bonus_y" value="1%"></div>
-    </div>
-  </div>
-
-  <button onclick="generateFullContract()">GERAR CONTRATO COMPLETO</button>
+  <button onclick="generateContract()">GERAR CONTRATO COMPLETO</button>
 </div>
 
 <div id="output"></div>
 
 <script>
-function generateFullContract() {
+function generateContract() {
+    // 1. CAPTURA DE DADOS
     const d = {
-        name: document.getElementById('emp_name').value,
-        addr: document.getElementById('emp_address').value,
-        prov: document.getElementById('province').value,
-        pos: document.getElementById('emp_pos').value,
-        date: document.getElementById('eff_date').value,
-        sal_m: document.getElementById('monthly_salary').value,
-        bg: document.getElementById('bonus_g').value,
-        bb: document.getElementById('bonus_b').value,
-        by: document.getElementById('bonus_y').value
+        name: document.getElementById('name').value,
+        address: document.getElementById('address').value,
+        province: document.getElementById('province').value,
+        position: document.getElementById('position').value,
+        manager: document.getElementById('manager').value,
+        start_date: document.getElementById('date').value,
+        monthly_salary: document.getElementById('salary_monthly').value
     };
 
-    const isON = d.prov === "ON";
-    const annual = (parseFloat(d.sal_m.replace(/,/g, '')) * 12).toLocaleString('en-US', {minimumFractionDigits: 2});
+    const isON = d.province === "ON";
 
-    // Blocos de texto condicional por província
-    const provinceTerms = {
+    // 2. DICIONÁRIO DE TERMOS (BC vs ON)
+    const terms = {
         esa: isON ? "Employment Standards Act, 2000 (Ontario)" : "British Columbia Employment Standards Act",
         law: isON ? "Ontario" : "British Columbia",
         city: isON ? "Toronto" : "Vancouver",
-        pipa: isON ? "Freedom of Information and Protection of Privacy Act" : "British Columbia Personal Information Protection Act (PIPA)",
-        termination: isON 
-            ? "providing only the minimum written notice, severance pay (if applicable), and benefit continuity required by the ESA, 2000. This supersedes common law rights."
-            : "providing only the minimum written notice, or compensation in lieu of such minimum written notice, as required by the Employment Standards Act of British Columbia. This supersedes common law rights."
+        ot_limit: isON ? "44 hours" : "40 hours",
+        privacy_act: isON ? "applicable Ontario privacy legislation" : "the British Columbia Personal Information Protection Act (PIPA)",
+        termination_clause: isON 
+            ? "minimum written notice, severance pay (if applicable), and benefit continuity required by the ESA, 2000" 
+            : "only the minimum written notice, or compensation in lieu of such minimum written notice, as required by the British Columbia Employment Standards Act"
     };
 
+    // 3. O TEMPLATE (Você pode colar o contrato inteiro aqui dentro das crases)
     const template = `
-PROMOTION AGREEMENT
+${d.name}
+${d.address}
 
-DATE: ${new Date().toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}
+Employment Agreement
 
-TO: ${d.name}
-ADDRESS: ${d.addr}
+Date: ${new Date().toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}
 
-Dear ${d.name.split(' ')[0]},
+Dear ${d.name},
 
-This Agreement confirms your promotion within eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) to the position of ${d.pos}.
+We are pleased to offer you employment with eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) in the position of ${d.position} pursuant to the terms and conditions stated in this Agreement.
 
-1. TERM
-Effective ${d.date}, and will continue until terminated in accordance with this Agreement.
+1. Term
+Your employment commences effective ${d.start_date} and will continue indefinitely until terminated in accordance with this Agreement.
 
-2. POSITION AND DUTIES
-You are employed as ${d.pos}. You report to the CEO. You agree to devote full working time to the Company and comply with all policies.
+2. Position and Duties
+You will be employed as ${d.position}, reporting to the ${d.manager}. 
 
-3. HOURS OF WORK
-Due to the managerial nature of your position, you are exempt from overtime pay under the ${provinceTerms.esa} (Managerial Exemption).
+3. Hours of Work
+In accordance with the ${terms.esa}, you are exempt from overtime pay for hours worked in excess of ${terms.ot_limit} per week.
 
-4. SALARY & BONUS
-Monthly Salary: $${d.sal_m} CAD.
-Bonus Plan: Quarterly accrued based on Monthly Net Revenues:
-- Green (Incredible): ${d.bg} of monthly salary.
-- Blue (Great): ${d.bb} of monthly salary.
-- Yellow (Improvement): ${d.by} of monthly salary.
+4. Salary
+Your monthly base salary will be $${d.monthly_salary} CAD.
 
-5. TERMINATION
-Upon termination, the Company will provide minimum notice or pay in lieu as required by the ${provinceTerms.esa}.
-Termination without cause: ${provinceTerms.termination}
+5. Termination
+The Company may terminate your employment by providing ${terms.termination_clause}.
 
-6. CONFIDENTIALITY & WORK PRODUCT
-(Standard MM clauses on IP Assignment and non-disclosure apply as per sections 13-14 of the corporate master template).
+6. Governing Law
+This Agreement is governed by the laws of ${terms.law}. Any disputes will be resolved in ${terms.city}.
 
-7. GOVERNING LAW
-This Agreement shall be governed by the laws of ${provinceTerms.law}. Disputes will be resolved in the courts of ${provinceTerms.law} sitting in ${provinceTerms.city}.
+7. Privacy
+Data is handled per ${terms.privacy_act}.
 
 ACCEPTED AND AGREED:
-
 __________________________          __________________________
 Kean Graham, CEO                    ${d.name}
 `;
 
-    const out = document.getElementById('output');
-    out.innerText = template;
-    out.style.display = 'block';
+    // Exibe o resultado na tela
+    const outputDiv = document.getElementById('output');
+    outputDiv.innerText = template;
+    outputDiv.style.display = 'block';
+    window.scrollTo(0, outputDiv.offsetTop);
 }
 </script>
+
 </body>
 </html>
