@@ -2,114 +2,137 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MM Contract Generator</title>
+  <title>MM Intelligent Contract Generator</title>
   <style>
-    body { font-family: 'Helvetica', Arial, sans-serif; margin: 40px; max-width: 900px; line-height: 1.5; color: #333; }
-    .form-section { background: #f8f9fa; padding: 25px; border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 30px; }
-    label { font-weight: bold; display: block; margin-top: 15px; font-size: 14px; }
-    input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; }
-    button { background-color: #0056b3; color: white; font-size: 18px; font-weight: bold; cursor: pointer; border: none; margin-top: 20px; }
-    #output { white-space: pre-wrap; border: 1px solid #dee2e6; padding: 40px; background: #fff; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; max-width: 1000px; color: #333; line-height: 1.6; }
+    .container { background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 20px; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
+    label { font-weight: bold; display: block; margin-bottom: 5px; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+    button { background: #004a99; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
+    button:hover { background: #003366; }
+    #output { margin-top: 40px; padding: 40px; border: 1px solid #ddd; background: white; white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 12pt; display: none; }
+    .bonus-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   </style>
 </head>
 <body>
 
-  <h1>Contract Generator</h1>
-
-  <div class="form-section">
-    <form onsubmit="generateContract(); return false;">
-      <label>Agreement Type:</label>
-      <select id="doc_type" required>
-        <option value="Promotion">Promotion Agreement</option>
-        <option value="NewHire">New Employment Agreement</option>
-      </select>
-
-      <label>Employee Full Name:</label>
-      <input type="text" id="name" required>
-
-      <label>Province:</label>
-      <select id="province" required>
-        <option value="BC">British Columbia</option>
-        <option value="ON">Ontario</option>
-      </select>
-
-      <label>Position:</label>
-      <input type="text" id="position" required>
-
-      <label>Monthly Salary (CAD):</label>
-      <input type="text" id="salary_monthly" required>
-
-      <label>Effective Date:</label>
-      <input type="text" id="eff_date" required>
-
-      <button type="submit">Generate Agreement</button>
-    </form>
+<div class="container">
+  <h1>MM Contract Generator - Full Template</h1>
+  
+  <div class="form-group">
+    <h3>1. Employee Information</h3>
+    <label>Full Name:</label>
+    <input type="text" id="emp_name" placeholder="Ex: Paulo Roberto Pozzato">
+    <label>Full Address:</label>
+    <input type="text" id="emp_address" placeholder="Ex: 1141 Bennet Dr, Port Coquitlam, BC, V3C 6H2">
+    <label>Province of Employment:</label>
+    <select id="province">
+      <option value="BC">British Columbia</option>
+      <option value="ON">Ontario</option>
+    </select>
   </div>
 
-  <div id="output"></div>
+  <div class="form-group">
+    <h3>2. Role & Salary</h3>
+    <label>Position:</label>
+    <input type="text" id="emp_pos" placeholder="Ex: Director of Engineering">
+    <label>Effective Date:</label>
+    <input type="text" id="eff_date" placeholder="Ex: March 24, 2025">
+    <label>Monthly Salary (CAD):</label>
+    <input type="text" id="monthly_salary" placeholder="Ex: 11,833.33">
+  </div>
 
-  <script>
-    function generateContract() {
-      const type = document.getElementById('doc_type').value;
-      const name = document.getElementById('name').value;
-      const province = document.getElementById('province').value;
-      const position = document.getElementById('position').value;
-      const salaryMonthly = document.getElementById('salary_monthly').value;
-      const effDate = document.getElementById('eff_date').value;
-      
-      const isON = province === "ON";
-      const esaName = isON ? "Employment Standards Act, 2000 (Ontario)" : "British Columbia Employment Standards Act";
-      const lawProvince = isON ? "Ontario" : "British Columbia";
+  <div class="form-group">
+    <h3>3. KPI Bonus (Quarterly Accrued %)</h3>
+    <div class="bonus-grid">
+      <div><label>Green %:</label><input type="text" id="bonus_g" value="5%"></div>
+      <div><label>Blue %:</label><input type="text" id="bonus_b" value="3%"></div>
+      <div><label>Yellow %:</label><input type="text" id="bonus_y" value="1%"></div>
+    </div>
+  </div>
 
-      // Lógica de Rescisão (Sem os erros de texto truncado)
-      const terminationWithoutCause = isON 
-        ? `The Company may terminate your employment without cause by providing only the minimum written notice, severance pay (if applicable), and benefit continuity required by the ${esaName}. This supersedes any rights to reasonable notice at common law.`
-        : `The Company may terminate your employment without cause by providing only the minimum written notice, or compensation in lieu of notice, as required by the ${esaName}. This supersedes any rights to reasonable notice at common law.`;
+  <button onclick="generateFullContract()">GERAR CONTRATO COMPLETO</button>
+</div>
 
-      const intro = type === "Promotion" 
-        ? `This Agreement confirms your promotion within eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) to the position of ${position}.`
-        : `We are pleased to offer you employment with eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) in the position of ${position}.`;
+<div id="output"></div>
 
-      const template = `
-${type.toUpperCase()} AGREEMENT
+<script>
+function generateFullContract() {
+    const d = {
+        name: document.getElementById('emp_name').value,
+        addr: document.getElementById('emp_address').value,
+        prov: document.getElementById('province').value,
+        pos: document.getElementById('emp_pos').value,
+        date: document.getElementById('eff_date').value,
+        sal_m: document.getElementById('monthly_salary').value,
+        bg: document.getElementById('bonus_g').value,
+        bb: document.getElementById('bonus_b').value,
+        by: document.getElementById('bonus_y').value
+    };
 
-DATE: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-TO: ${name}
+    const isON = d.prov === "ON";
+    const annual = (parseFloat(d.sal_m.replace(/,/g, '')) * 12).toLocaleString('en-US', {minimumFractionDigits: 2});
 
-Dear ${name.split(' ')[0]},
+    // Blocos de texto condicional por província
+    const provinceTerms = {
+        esa: isON ? "Employment Standards Act, 2000 (Ontario)" : "British Columbia Employment Standards Act",
+        law: isON ? "Ontario" : "British Columbia",
+        city: isON ? "Toronto" : "Vancouver",
+        pipa: isON ? "Freedom of Information and Protection of Privacy Act" : "British Columbia Personal Information Protection Act (PIPA)",
+        termination: isON 
+            ? "providing only the minimum written notice, severance pay (if applicable), and benefit continuity required by the ESA, 2000. This supersedes common law rights."
+            : "providing only the minimum written notice, or compensation in lieu of such minimum written notice, as required by the Employment Standards Act of British Columbia. This supersedes common law rights."
+    };
 
-${intro}
+    const template = `
+PROMOTION AGREEMENT
+
+DATE: ${new Date().toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}
+
+TO: ${d.name}
+ADDRESS: ${d.addr}
+
+Dear ${d.name.split(' ')[0]},
+
+This Agreement confirms your promotion within eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) to the position of ${d.pos}.
 
 1. TERM
-Your employment pursuant to this Agreement commences effective ${effDate} and will continue until terminated in accordance with this Agreement (the “Term”).
+Effective ${d.date}, and will continue until terminated in accordance with this Agreement.
 
 2. POSITION AND DUTIES
-The Company will employ you as ${position}. You shall devote your full working time to the Company and comply with all policies.
+You are employed as ${d.pos}. You report to the CEO. You agree to devote full working time to the Company and comply with all policies.
 
 3. HOURS OF WORK
-Due to the managerial nature of your position, you are exempt from entitlement to payment for overtime under the ${esaName} (Managerial Exemption).
+Due to the managerial nature of your position, you are exempt from overtime pay under the ${provinceTerms.esa} (Managerial Exemption).
 
-4. SALARY
-The Company will pay you a monthly base salary of $${salaryMonthly} CAD, less applicable withholdings and deductions.
+4. SALARY & BONUS
+Monthly Salary: $${d.sal_m} CAD.
+Bonus Plan: Quarterly accrued based on Monthly Net Revenues:
+- Green (Incredible): ${d.bg} of monthly salary.
+- Blue (Great): ${d.bb} of monthly salary.
+- Yellow (Improvement): ${d.by} of monthly salary.
 
-5. TERMINATION OF EMPLOYMENT
-Your employment may be terminated by the Company without cause by:
-${terminationWithoutCause}
+5. TERMINATION
+Upon termination, the Company will provide minimum notice or pay in lieu as required by the ${provinceTerms.esa}.
+Termination without cause: ${provinceTerms.termination}
 
-6. GOVERNING LAW
-This Agreement shall be governed by the laws of the Province of ${lawProvince} and the laws of Canada applicable therein.
+6. CONFIDENTIALITY & WORK PRODUCT
+(Standard MM clauses on IP Assignment and non-disclosure apply as per sections 13-14 of the corporate master template).
+
+7. GOVERNING LAW
+This Agreement shall be governed by the laws of ${provinceTerms.law}. Disputes will be resolved in the courts of ${provinceTerms.law} sitting in ${provinceTerms.city}.
 
 ACCEPTED AND AGREED:
 
 __________________________          __________________________
-Kean Graham, CEO                    ${name}
+Kean Graham, CEO                    ${d.name}
 `;
 
-      const outputDiv = document.getElementById('output');
-      outputDiv.innerText = template;
-      outputDiv.style.display = 'block';
-    }
-  </script>
+    const out = document.getElementById('output');
+    out.innerText = template;
+    out.style.display = 'block';
+}
+</script>
 </body>
 </html>
-
