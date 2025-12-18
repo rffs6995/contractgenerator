@@ -2,42 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gerador de Contrato MonetizeMore - Canada</title>
+  <title>Gerador de Contrato MonetizeMore</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; max-width: 900px; line-height: 1.6; }
-    .form-section { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    label { font-weight: bold; display: block; margin-top: 10px; }
-    input, textarea, button, select { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    button { background-color: #007bff; color: white; font-size: 16px; cursor: pointer; border: none; }
-    button:hover { background-color: #0056b3; }
-    #output { white-space: pre-wrap; border: 2px solid #333; padding: 30px; background: #fff; display: none; }
+    body { font-family: 'Helvetica', Arial, sans-serif; margin: 40px; max-width: 900px; line-height: 1.5; color: #333; }
+    .form-section { background: #f8f9fa; padding: 25px; border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 30px; }
+    label { font-weight: bold; display: block; margin-top: 15px; font-size: 14px; }
+    input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; }
+    button { background-color: #28a745; color: white; font-size: 18px; font-weight: bold; cursor: pointer; border: none; margin-top: 20px; transition: 0.3s; }
+    button:hover { background-color: #218838; }
+    #output { white-space: pre-wrap; border: 1px solid #dee2e6; padding: 40px; background: #fff; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    h1 { color: #0056b3; text-align: center; }
   </style>
 </head>
 <body>
 
-  <h1>Contract Generator - Canada</h1>
+  <h1>MM Contract & Promotion Generator</h1>
 
   <div class="form-section">
     <form onsubmit="generateContract(); return false;">
-      <label>Employee Name:</label>
-      <input type="text" id="employee_name" placeholder="Ex: Faizan Siddiqi" required>
-
-      <label>Position:</label>
-      <input type="text" id="position" placeholder="Ex: Chief Operating Officer" required>
-
-      <label>Province of Employment:</label>
-      <select id="province" required>
-        <option value="Ontario">Ontario</option>
-        <option value="British Columbia">British Columbia</option>
+      <label>Agreement Type:</label>
+      <select id="doc_type" required>
+        <option value="Promotion">Promotion Agreement (Ex: Paulo Roberto)</option>
+        <option value="NewHire">New Employment Agreement (General Template)</option>
       </select>
 
-      <label>Annual Salary (CAD):</label>
-      <input type="text" id="salary" placeholder="Ex: 225,000.00" required>
+      <label>Employee Full Name:</label>
+      <input type="text" id="name" placeholder="Ex: Paulo Roberto Pozzato" required>
 
-      <label>Start Date:</label>
-      <input type="text" id="start_date" placeholder="Ex: September 03, 2024" required>
+      <label>Address:</label>
+      <input type="text" id="address" placeholder="Ex: 1141 Bennet Dr, Port Coquitlam, BC">
 
-      <button type="submit">Gerar Contrato Finalizado</button>
+      <label>Province:</label>
+      <select id="province" required>
+        <option value="BC">British Columbia</option>
+        <option value="ON">Ontario</option>
+      </select>
+
+      <label>New Position:</label>
+      <input type="text" id="position" placeholder="Ex: Director of Engineering" required>
+
+      <label>Monthly Base Salary (CAD):</label>
+      <input type="text" id="salary_monthly" placeholder="Ex: 11,833.33" required>
+
+      <label>Effective Date (Promotion or Start):</label>
+      <input type="text" id="eff_date" placeholder="Ex: March 24, 2025" required>
+
+      <button type="submit">Generate Agreement</button>
     </form>
   </div>
 
@@ -45,61 +55,67 @@
 
   <script>
     function generateContract() {
-      const name = document.getElementById('employee_name').value;
-      const pos = document.getElementById('position').value;
+      const type = document.getElementById('doc_type').value;
+      const name = document.getElementById('name').value;
+      const address = document.getElementById('address').value;
       const province = document.getElementById('province').value;
-      const salary = document.getElementById('salary').value;
-      const date = document.getElementById('start_date').value;
+      const position = document.getElementById('position').value;
+      const salaryMonthly = document.getElementById('salary_monthly').value;
+      const effDate = document.getElementById('eff_date').value;
+      
+      const salaryAnnual = (parseFloat(salaryMonthly.replace(/,/g, '')) * 12).toLocaleString('en-US', {minimumFractionDigits: 2});
+      const isON = province === "ON";
+      const esaFull = isON ? "Employment Standards Act, 2000 (Ontario)" : "British Columbia Employment Standards Act";
+      const lawCity = isON ? "Ontario" : "British Columbia";
 
-      // Lógica Condicional de Legislação e Termos
-      const isOntario = province === "Ontario";
-      const esaName = isOntario ? "Employment Standards Act, 2000 (Ontario)" : "Employment Standards Act (British Columbia)";
-      const lawCity = isOntario ? "Ontario" : "British Columbia";
-      const overtimeHours = isOntario ? "44 hours" : "40 hours";
+      // Lógica de Rescisão e Benefícios (Específica por Província)
+      const terminationClause = isON 
+        ? "The Company will provide minimum written notice, severance pay (if applicable), and benefit plan continuity as mandated by the Ontario ESA 2000."
+        : "The Company will provide only the minimum written notice, or compensation in lieu, required by the British Columbia Employment Standards Act. This supersedes any common law rights.";
 
-      // Cláusula de Probation (Ajustada para a regra de 3 meses em Ontario)
-      const probationText = isOntario 
-        ? `Your employment will be subject to a probationary period of six (6) months. During the first three (3) months, the Company may terminate your employment without notice. Following the first three (3) months, termination during the remainder of the probation will require minimum notice as per the ${esaName}.` 
-        : `Your employment will be subject to a probationary period of six (6) months, during which the Company may terminate your employment without notice or pay in lieu of notice, in accordance with the ${esaName}.`;
+      let template = "";
 
-      // Cláusula de Termination (Limpando o texto truncado)
-      const terminationWithoutCause = isOntario
-        ? `The Company may terminate your employment without cause by providing the minimum written notice, severance pay (if applicable), and benefit continuity required by the ESA, 2000. This constitutes your entire entitlement and supersedes any rights to reasonable notice at common law.`
-        : `The Company may terminate your employment without cause by providing only the minimum written notice or pay in lieu of notice required by the ${esaName}.`;
-
-      const template = `
-EMPLOYMENT AGREEMENT
+      if (type === "Promotion") {
+        template = `
+PROMOTION AGREEMENT
 
 DATE: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-BETWEEN: eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”)
-AND: ${name} (the “Employee”)
 
-1. TERM AND PROBATION
-Your employment commences effective ${date} and will continue indefinitely until terminated (the “Term”). 
-${probationText} [cite: 5, 163, 166]
+TO: ${name}
+ADDRESS: ${address}
+
+Dear ${name.split(' ')[0]},
+
+This Agreement confirms your promotion within eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) to the position of ${position} pursuant to the terms and conditions stated in this Agreement.
+
+1. TERM
+Your employment pursuant to this Agreement commences effective ${effDate} and will continue until terminated in accordance with this Agreement (the “Term”).
 
 2. POSITION AND DUTIES
-You are employed as ${pos}. You shall devote your full working time to the Company and comply with all policies. [cite: 6, 12, 13]
+The Company will employ you as ${position}. You will report to the CEO. You agree to devote your full working time to the Company and act in its best interests.
 
 3. HOURS OF WORK
-Your hours may vary as business requires. In accordance with the ${esaName}, you are not eligible for overtime pay for hours worked in excess of ${overtimeHours} per week, provided the position qualifies for managerial exemption. 
+Due to the managerial nature of your position as ${position}, you are exempt from entitlement to payment for overtime under the ${esaFull} (Managerial Exemption).
 
-4. SALARY
-The Company will pay you an annual base salary of $${salary} CAD, less applicable withholdings, payable bi-monthly. [cite: 23]
+4. SALARY AND BONUS
+Monthly Salary: $${salaryMonthly} CAD.
+The Company may pay you a bonus pursuant to the Company Net Revenue Bonus plan. Eligibility and amounts are within the sole discretion of the Company.
 
-5. TERMINATION OF EMPLOYMENT
-(a) Resignation: You may resign by providing four (4) weeks' written notice. [cite: 47]
-(b) Just Cause: The Company may terminate without notice for just cause as permitted by law. [cite: 51]
-(c) Without Cause: ${terminationWithoutCause} [cite: 52, 53]
+5. TERMINATION
+Upon termination, the Company will comply with the minimum requirements of the ${esaFull}. 
+${terminationClause}
 
 6. GOVERNING LAW
-This Agreement shall be governed by the laws of the Province of ${lawCity} and the laws of Canada applicable therein. 
+This Agreement is governed by the laws of ${lawCity}.
 
 ACCEPTED AND AGREED:
-
-_______________________________          _______________________________
-Kean Graham, CEO                         ${name}
+__________________________
+${name}
 `;
+      } else {
+        // Template para Novo Contrato (New Hire)
+        template = `NEW EMPLOYMENT AGREEMENT - [Conteúdo similar ao Promotion, ajustado para novos funcionários]`;
+      }
 
       const outputDiv = document.getElementById('output');
       outputDiv.innerText = template;
@@ -107,7 +123,6 @@ Kean Graham, CEO                         ${name}
       window.scrollTo(0, outputDiv.offsetTop);
     }
   </script>
-
 </body>
 </html>
 
