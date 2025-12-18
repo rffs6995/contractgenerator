@@ -2,143 +2,112 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gerador de Contrato IVT</title>
+  <title>Gerador de Contrato MonetizeMore - Canada</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      max-width: 900px;
-    }
-    input, textarea, button {
-      width: 100%;
-      padding: 8px;
-      margin: 10px 0;
-      box-sizing: border-box;
-    }
-    #output {
-      white-space: pre-wrap;
-      border: 1px solid #ccc;
-      padding: 20px;
-      margin-top: 30px;
-      background: #f9f9f9;
-    }
+    body { font-family: Arial, sans-serif; margin: 40px; max-width: 900px; line-height: 1.6; }
+    .form-section { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, textarea, button, select { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { background-color: #007bff; color: white; font-size: 16px; cursor: pointer; border: none; }
+    button:hover { background-color: #0056b3; }
+    #output { white-space: pre-wrap; border: 2px solid #333; padding: 30px; background: #fff; display: none; }
   </style>
 </head>
 <body>
 
-  <h1>Gerador de Contrato - IVT Agreement</h1>
+  <h1>Contract Generator - Canada</h1>
 
-  <form onsubmit="generateContract(); return false;">
-    <label>Client:</label>
-    <input type="text" id="client" required>
+  <div class="form-section">
+    <form onsubmit="generateContract(); return false;">
+      <label>Employee Name:</label>
+      <input type="text" id="employee_name" placeholder="Ex: Faizan Siddiqi" required>
 
-    <label>TC Vendor:</label>
-    <input type="text" id="tc_vendor" required>
+      <label>Position:</label>
+      <input type="text" id="position" placeholder="Ex: Chief Operating Officer" required>
 
-    <label>Solution Name:</label>
-    <input type="text" id="solution_name" required>
+      <label>Province of Employment:</label>
+      <select id="province" required>
+        <option value="Ontario">Ontario</option>
+        <option value="British Columbia">British Columbia</option>
+      </select>
 
-    <label>Pricing Description:</label>
-    <textarea id="tc_pricing" rows="3" required></textarea>
+      <label>Annual Salary (CAD):</label>
+      <input type="text" id="salary" placeholder="Ex: 225,000.00" required>
 
-    <label>Data de Início (formato: April 23, 2025):</label>
-    <input type="text" id="date" required>
+      <label>Start Date:</label>
+      <input type="text" id="start_date" placeholder="Ex: September 03, 2024" required>
 
-    <label>Go Live Date:</label>
-    <input type="text" id="go_live_date" required>
-
-    <label>Terms & Conditions Link:</label>
-    <input type="url" id="tc_link" required>
-
-    <button type="submit">Gerar Contrato</button>
-  </form>
+      <button type="submit">Gerar Contrato Finalizado</button>
+    </form>
+  </div>
 
   <div id="output"></div>
 
   <script>
     function generateContract() {
-      const data = {
-        client: document.getElementById('client').value,
-        tc_vendor: document.getElementById('tc_vendor').value,
-        solution_name: document.getElementById('solution_name').value,
-        tc_pricing: document.getElementById('tc_pricing').value,
-        date: document.getElementById('date').value,
-        go_live_date: document.getElementById('go_live_date').value,
-        tc_link: document.getElementById('tc_link').value
-      };
+      const name = document.getElementById('employee_name').value;
+      const pos = document.getElementById('position').value;
+      const province = document.getElementById('province').value;
+      const salary = document.getElementById('salary').value;
+      const date = document.getElementById('start_date').value;
+
+      // Lógica Condicional de Legislação e Termos
+      const isOntario = province === "Ontario";
+      const esaName = isOntario ? "Employment Standards Act, 2000 (Ontario)" : "Employment Standards Act (British Columbia)";
+      const lawCity = isOntario ? "Ontario" : "British Columbia";
+      const overtimeHours = isOntario ? "44 hours" : "40 hours";
+
+      // Cláusula de Probation (Ajustada para a regra de 3 meses em Ontario)
+      const probationText = isOntario 
+        ? `Your employment will be subject to a probationary period of six (6) months. During the first three (3) months, the Company may terminate your employment without notice. Following the first three (3) months, termination during the remainder of the probation will require minimum notice as per the ${esaName}.` 
+        : `Your employment will be subject to a probationary period of six (6) months, during which the Company may terminate your employment without notice or pay in lieu of notice, in accordance with the ${esaName}.`;
+
+      // Cláusula de Termination (Limpando o texto truncado)
+      const terminationWithoutCause = isOntario
+        ? `The Company may terminate your employment without cause by providing the minimum written notice, severance pay (if applicable), and benefit continuity required by the ESA, 2000. This constitutes your entire entitlement and supersedes any rights to reasonable notice at common law.`
+        : `The Company may terminate your employment without cause by providing only the minimum written notice or pay in lieu of notice required by the ${esaName}.`;
 
       const template = `
-Invalid Traffic Technology Agreement (the "Agreement")
+EMPLOYMENT AGREEMENT
 
-This Invalid Traffic Technology Agreement (the "Agreement") is made by and between ${data.client} (the “Client”), an approved Google MCM Partner, and ${data.tc_vendor} ("TC Vendor", collectively, the "Parties"), relating to Client’s use of TC Vendor’s invalid traffic (IVT) measurement and blocking services and technologies, including TC Vendor’s ${data.solution_name} solution, analytics platforms, support, and user documentation (collectively, the "Services").
+DATE: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+BETWEEN: eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”)
+AND: ${name} (the “Employee”)
 
-Scope of Services
+1. TERM AND PROBATION
+Your employment commences effective ${date} and will continue indefinitely until terminated (the “Term”). 
+${probationText} [cite: 5, 163, 166]
 
-Invalid Traffic Measurement & Blocking.
-TC Vendor shall provide Client during the Term access to its ${data.solution_name} solution, which includes:
-(a) Real-time detection, measurement, and blocking of invalid traffic (IVT) across Client’s Properties.
-(b) Access to the ${data.solution_name} dashboard and analytics suite.
-(c) Proactive IVT mitigation strategies.
-(d) Compliance with Google MCM requirements.
+2. POSITION AND DUTIES
+You are employed as ${pos}. You shall devote your full working time to the Company and comply with all policies. [cite: 6, 12, 13]
 
-Integration & Support.
-TC Vendor shall provide implementation support, SDK guidance, API docs, and technical assistance.
+3. HOURS OF WORK
+Your hours may vary as business requires. In accordance with the ${esaName}, you are not eligible for overtime pay for hours worked in excess of ${overtimeHours} per week, provided the position qualifies for managerial exemption. 
 
-Service Fees & Payment Terms
+4. SALARY
+The Company will pay you an annual base salary of $${salary} CAD, less applicable withholdings, payable bi-monthly. [cite: 23]
 
-${data.solution_name} Pricing:
-${data.tc_pricing}
+5. TERMINATION OF EMPLOYMENT
+(a) Resignation: You may resign by providing four (4) weeks' written notice. [cite: 47]
+(b) Just Cause: The Company may terminate without notice for just cause as permitted by law. [cite: 51]
+(c) Without Cause: ${terminationWithoutCause} [cite: 52, 53]
 
-Calculation Basis:
-- Greater of GA pageviews or SDK-measured requests.
-- Overage fees may apply.
-
-Payment Terms:
-Upfront invoice. Net 30.
-
-General Terms & Conditions
-
-Term & Termination:
-Term begins ${data.date}, renews annually unless 30 days’ notice given.
-Post-termination, Client must stop using Services.
-
-Compliance:
-Client must comply with Google MCM rules.
-
-Data Sharing:
-Client allows access to traffic and revenue data for IVT analysis.
-
-Intellectual Property:
-TC Vendor retains IP. Client gets a limited license.
-
-Liability & Indemnification:
-No liability for clawbacks/suspensions. Cap = fees from last 12 months.
-Client indemnifies TC Vendor for violations.
-
-Confidentiality & Non-Solicitation:
-Parties protect confidential data and avoid solicitation during Term and 1–2 years after.
-
-Governing Law:
-British Columbia, Canada.
-
-Trial Period:
-7-day trial from Go Live: ${data.go_live_date}
-
-Entire Agreement:
-Includes linked Terms & Conditions: ${data.tc_link}
-Amendments require 30 days’ notice.
+6. GOVERNING LAW
+This Agreement shall be governed by the laws of the Province of ${lawCity} and the laws of Canada applicable therein. 
 
 ACCEPTED AND AGREED:
 
-By Client:
-_______________________________
-${data.client}
-Date: _________________________
+_______________________________          _______________________________
+Kean Graham, CEO                         ${name}
 `;
 
-      document.getElementById('output').innerText = template;
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerText = template;
+      outputDiv.style.display = 'block';
+      window.scrollTo(0, outputDiv.offsetTop);
     }
   </script>
 
 </body>
 </html>
+
