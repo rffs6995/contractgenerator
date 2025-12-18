@@ -2,35 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gerador de Contrato MonetizeMore</title>
+  <title>MM Contract Generator</title>
   <style>
     body { font-family: 'Helvetica', Arial, sans-serif; margin: 40px; max-width: 900px; line-height: 1.5; color: #333; }
     .form-section { background: #f8f9fa; padding: 25px; border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 30px; }
     label { font-weight: bold; display: block; margin-top: 15px; font-size: 14px; }
     input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; }
-    button { background-color: #28a745; color: white; font-size: 18px; font-weight: bold; cursor: pointer; border: none; margin-top: 20px; transition: 0.3s; }
-    button:hover { background-color: #218838; }
+    button { background-color: #0056b3; color: white; font-size: 18px; font-weight: bold; cursor: pointer; border: none; margin-top: 20px; }
     #output { white-space: pre-wrap; border: 1px solid #dee2e6; padding: 40px; background: #fff; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    h1 { color: #0056b3; text-align: center; }
   </style>
 </head>
 <body>
 
-  <h1>MM Contract & Promotion Generator</h1>
+  <h1>Contract Generator</h1>
 
   <div class="form-section">
     <form onsubmit="generateContract(); return false;">
       <label>Agreement Type:</label>
       <select id="doc_type" required>
-        <option value="Promotion">Promotion Agreement (Ex: Paulo Roberto)</option>
-        <option value="NewHire">New Employment Agreement (General Template)</option>
+        <option value="Promotion">Promotion Agreement</option>
+        <option value="NewHire">New Employment Agreement</option>
       </select>
 
       <label>Employee Full Name:</label>
-      <input type="text" id="name" placeholder="Ex: Paulo Roberto Pozzato" required>
-
-      <label>Address:</label>
-      <input type="text" id="address" placeholder="Ex: 1141 Bennet Dr, Port Coquitlam, BC">
+      <input type="text" id="name" required>
 
       <label>Province:</label>
       <select id="province" required>
@@ -38,14 +33,14 @@
         <option value="ON">Ontario</option>
       </select>
 
-      <label>New Position:</label>
-      <input type="text" id="position" placeholder="Ex: Director of Engineering" required>
+      <label>Position:</label>
+      <input type="text" id="position" required>
 
-      <label>Monthly Base Salary (CAD):</label>
-      <input type="text" id="salary_monthly" placeholder="Ex: 11,833.33" required>
+      <label>Monthly Salary (CAD):</label>
+      <input type="text" id="salary_monthly" required>
 
-      <label>Effective Date (Promotion or Start):</label>
-      <input type="text" id="eff_date" placeholder="Ex: March 24, 2025" required>
+      <label>Effective Date:</label>
+      <input type="text" id="eff_date" required>
 
       <button type="submit">Generate Agreement</button>
     </form>
@@ -57,70 +52,62 @@
     function generateContract() {
       const type = document.getElementById('doc_type').value;
       const name = document.getElementById('name').value;
-      const address = document.getElementById('address').value;
       const province = document.getElementById('province').value;
       const position = document.getElementById('position').value;
       const salaryMonthly = document.getElementById('salary_monthly').value;
       const effDate = document.getElementById('eff_date').value;
       
-      const salaryAnnual = (parseFloat(salaryMonthly.replace(/,/g, '')) * 12).toLocaleString('en-US', {minimumFractionDigits: 2});
       const isON = province === "ON";
-      const esaFull = isON ? "Employment Standards Act, 2000 (Ontario)" : "British Columbia Employment Standards Act";
-      const lawCity = isON ? "Ontario" : "British Columbia";
+      const esaName = isON ? "Employment Standards Act, 2000 (Ontario)" : "British Columbia Employment Standards Act";
+      const lawProvince = isON ? "Ontario" : "British Columbia";
 
-      // Lógica de Rescisão e Benefícios (Específica por Província)
-      const terminationClause = isON 
-        ? "The Company will provide minimum written notice, severance pay (if applicable), and benefit plan continuity as mandated by the Ontario ESA 2000."
-        : "The Company will provide only the minimum written notice, or compensation in lieu, required by the British Columbia Employment Standards Act. This supersedes any common law rights.";
+      // Lógica de Rescisão (Sem os erros de texto truncado)
+      const terminationWithoutCause = isON 
+        ? `The Company may terminate your employment without cause by providing only the minimum written notice, severance pay (if applicable), and benefit continuity required by the ${esaName}. This supersedes any rights to reasonable notice at common law.`
+        : `The Company may terminate your employment without cause by providing only the minimum written notice, or compensation in lieu of notice, as required by the ${esaName}. This supersedes any rights to reasonable notice at common law.`;
 
-      let template = "";
+      const intro = type === "Promotion" 
+        ? `This Agreement confirms your promotion within eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) to the position of ${position}.`
+        : `We are pleased to offer you employment with eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) in the position of ${position}.`;
 
-      if (type === "Promotion") {
-        template = `
-PROMOTION AGREEMENT
+      const template = `
+${type.toUpperCase()} AGREEMENT
 
 DATE: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-
 TO: ${name}
-ADDRESS: ${address}
 
 Dear ${name.split(' ')[0]},
 
-This Agreement confirms your promotion within eSell Solutions Ltd. DBA MONETIZEMORE (the “Company”) to the position of ${position} pursuant to the terms and conditions stated in this Agreement.
+${intro}
 
 1. TERM
 Your employment pursuant to this Agreement commences effective ${effDate} and will continue until terminated in accordance with this Agreement (the “Term”).
 
 2. POSITION AND DUTIES
-The Company will employ you as ${position}. You will report to the CEO. You agree to devote your full working time to the Company and act in its best interests.
+The Company will employ you as ${position}. You shall devote your full working time to the Company and comply with all policies.
 
 3. HOURS OF WORK
-Due to the managerial nature of your position as ${position}, you are exempt from entitlement to payment for overtime under the ${esaFull} (Managerial Exemption).
+Due to the managerial nature of your position, you are exempt from entitlement to payment for overtime under the ${esaName} (Managerial Exemption).
 
-4. SALARY AND BONUS
-Monthly Salary: $${salaryMonthly} CAD.
-The Company may pay you a bonus pursuant to the Company Net Revenue Bonus plan. Eligibility and amounts are within the sole discretion of the Company.
+4. SALARY
+The Company will pay you a monthly base salary of $${salaryMonthly} CAD, less applicable withholdings and deductions.
 
-5. TERMINATION
-Upon termination, the Company will comply with the minimum requirements of the ${esaFull}. 
-${terminationClause}
+5. TERMINATION OF EMPLOYMENT
+Your employment may be terminated by the Company without cause by:
+${terminationWithoutCause}
 
 6. GOVERNING LAW
-This Agreement is governed by the laws of ${lawCity}.
+This Agreement shall be governed by the laws of the Province of ${lawProvince} and the laws of Canada applicable therein.
 
 ACCEPTED AND AGREED:
-__________________________
-${name}
+
+__________________________          __________________________
+Kean Graham, CEO                    ${name}
 `;
-      } else {
-        // Template para Novo Contrato (New Hire)
-        template = `NEW EMPLOYMENT AGREEMENT - [Conteúdo similar ao Promotion, ajustado para novos funcionários]`;
-      }
 
       const outputDiv = document.getElementById('output');
       outputDiv.innerText = template;
       outputDiv.style.display = 'block';
-      window.scrollTo(0, outputDiv.offsetTop);
     }
   </script>
 </body>
